@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    type: webapp
+    run: nevaginx
+  name: nevaginx
+spec:
+  containers:
+  - image: nginx
+    name: nevaginx
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

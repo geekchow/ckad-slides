@@ -40,6 +40,15 @@ kubectl run probepod --image=busybox -n probes --dry-run=client -o yaml > probep
 # edit the probpod.yaml , add sleep infinity.
 ```
 
+> caution if your cmd `kubectl exec probepod -n probes -- /bin/bash`
+get error 
+
+```bash
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/bin/bash": stat /bin/bash: no such file or directory: unknown
+command terminated with exit code 126
+```
+That means to bash is installed on this container. You have to re-built the image to install the bash.
+
 ## Task 6 create a deployment 
 
 ```bash
@@ -55,5 +64,47 @@ kubectl rollout history deployment updates
 kubectl rollout history deployment updates --revision=1
 
 kubectl rollout undo deployment updates --to-revision=1
+
+```
+
+## Task 7 Exposing application
+
+```bash
+# expose the updates deployment 
+kubectl expose deployment updates --type=NodePort --name=task7svc --port=80 --target-port=80
+
+kubectl get svc task7svc
+# check the NodePort
+# you can use https://$(minikube ip):{node-port} to access the service.
+# Caution, it only works for Linux system.
+# For mac you have to use 
+minikube svc task7svc 
+# To re-mapping the port.
+
+```
+
+1️⃣ If driver = docker (default on macOS nowadays)
+👉 The Minikube node runs inside a Docker container, not a full VM.
+This means its “Node IP” (192.168.49.2) exists only inside Docker’s network, not directly reachable from your Mac host.
+
+## Task 8 
+
+```bash
+kubectl run nevaginx --image=nginx --dry-run=client -o yaml > nevaginx.yaml
+
+kubectl run nevatest --image=busybox --dry-run=client -o yaml > nevatest.yaml
+
+kubectl expose deployment 
+
+kubectl exec nevatest -it -- ls /bin
+# let find the shell cmd here 
+# it could be /bin/sh /bin/bash
+kubectl exec nevatest -it -- /bin/sh
+
+ wget --timeout=1 10.244.0.3 -S -O -
+# 10.244.0.3 ip of nevaginx
+
+
+
 
 ```
