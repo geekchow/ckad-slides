@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: updates
+ labels:
+   type: prod
+spec:
+ replicas: 3
+ selector:
+   matchLabels:
+     type: prod
+ template:
+   metadata:
+     labels:
+       type: prod
+   spec:
+     containers:
+     - name: nginx
+       image: nginx:1.17
+ strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxSurge: 50%
+     maxUnavailable: 50%

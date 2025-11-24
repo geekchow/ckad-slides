@@ -104,6 +104,77 @@ kubectl describe pod probepod -n probes
 ```
 
 
+## Task 6 Create a deployment 
+
+```shell
+# search maxSurge in kubernetes.io
+# find the deployment yaml
+# set nginx:1.17
+kubectl apply -f task6-dp.yaml --dry-run=client
+
+kubectl get all -l type=prod
+# see three pods and a replicasets
+
+kubectl edit deployment updates
+# update nginx:latest
+
+kubectl get all -l type=prod
+# see three pods and two replicasets
+
+#rollback to last deployment
+kubectl rollout -h | less
+kubectl rollout undo deployment/updates
+
+```
+
+## Task 7 Exposing Applications
+
+```bash
+# check help of expose cmd
+kubectl expose -h | less
+
+kubectl expose deployment updates --port=80 --target-port=80 --name=task7svc
+
+kubectl get svc
+# find the service task7svc and its ip
+
+minikube ssh 
+
+curl 10.101.162.103
+# get the defaul enginx response.
+
+
+```
+
+## Task 8 NetworkPolicy
+
+
+```bash
+
+minikube start --network-plugin=cni --cni=calico
+# by default minikube doesn't enable networkplicy 
+
+kubectl run nevaginx --image=nginx 
+
+kubectl label pods nevaginx type=webapp
+
+kubectl expose pod nevaginx --port=80 --target-port=80
+
+# search networkpolicy
+
+kubectl apply -f task8-np.yaml 
+
+kubectl run nevatest --image=busybox -- sleep infinity
+
+kubectl exec -it nevatest -- wget --spider --timeout=1 nevaginx
+# it will failed, since the nevatest pod doesn't have label type=tester
+
+kubectl label pods nevatest type=tester
+
+
+
+```
+
 ## Mount volume from ConfigMap
 config map store file and mount volume from configmap.
 
