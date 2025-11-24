@@ -171,6 +171,9 @@ kubectl exec -it nevatest -- wget --spider --timeout=1 nevaginx
 
 kubectl label pods nevatest type=tester
 
+# remove label type and retry .
+kubectl label pods nevatest type-
+
 
 
 ```
