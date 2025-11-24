@@ -1,3 +1,47 @@
+# Exam
+
+
+
+## Task1 refer secret from pod
+```shell
+kubectl create secret -h | less
+
+kubectl create secret generic insecret --from-literal=COLOR=blue -n indiana
+
+kubectl run inpod --image=nginx -n indiana --dry-run=client -o yaml  > taks1-inpod.yaml
+
+# append env var refer secret part.
+# verify the syntax before apply
+kubectl apply --dry-run=client -f task1-pod.yaml
+
+kubectl explain deployment
+
+kubectl explain deployment.spec
+
+kubectl explain pod
+
+kubectl explain pod.spec.containers
+
+kubectl explain secret
+
+kubectl apply -f taks1-inpod.yaml
+```
+
+[complete code of pod](./task1-inpod.yaml)
+
+## Task2 find pods by label
+
+```shell
+kubectl get pods -h | grep label -C 5
+
+
+kubectl get pods -A -l tier=control-plane
+
+kubectl get pods -A -l tier=control-plane -o Name    
+
+kubectl get pods -A -l tier=control-plane -o Name | sed 's/^.*\///' > /tmp/pods.txt
+```
+
 
 ## Mount volume from ConfigMap
 config map store file and mount volume from configmap.
