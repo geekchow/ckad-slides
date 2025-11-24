@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: probepod
+  namespace: probes
+spec:
+  containers:
+  - name: probepod
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - sleep infinity
+    livenessProbe:
+      exec:
+        command:
+        - wget
+        - https://192.168.49.2:8443/readyz
+      initialDelaySeconds: 5
+      periodSeconds: 5

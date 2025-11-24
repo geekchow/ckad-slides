@@ -37,9 +37,70 @@ kubectl get pods -h | grep label -C 5
 
 kubectl get pods -A -l tier=control-plane
 
+kubectl get pods -A --selector tier=control-plane
+
 kubectl get pods -A -l tier=control-plane -o Name    
 
 kubectl get pods -A -l tier=control-plane -o Name | sed 's/^.*\///' > /tmp/pods.txt
+```
+
+## Task 3 Creating a configmap 
+
+```bash
+# 1. create a cm from a file 
+echo "welcome to the task3 webserver" > index.html
+
+# find the cmd to creat cm from file
+kubectl create cm -h | grep file -C 5
+
+kubectl create configmap  task3cm --from-file=index.html=./index.html 
+
+# 2. create a pod runing nginx 
+# search "configmap" in kubernetes.io find the yaml and edit in task3-pod.yaml
+
+kubectl apply -f task3-pod.yaml
+
+kubectl exec -it oregonpod -- /bin/sh
+
+curl localhost
+#verify the content.
+```
+
+## Task 4 SideCar 
+
+```bash
+#search keyword "sidecar" in kubernetes.io 
+# you will find the deployment for sidecar , you have to modify it to pod 
+kubectl apply -f task4-pod.yaml --dry-run=client
+
+kubectl apply -f task4-pod.yaml
+
+kubectl get pod 
+# you will see the sidepod has two containers, one of the two keep restarting every 15 sec.
+
+```
+
+## Task 5 probe 
+
+run a pod , the health check is to check the k8s api healthz endpoint.
+```bash
+minikube ssh 
+# get ip of the minikbue host 
+hostname -i 
+# curl k8s api healthz endpoint.
+curl -i https://192.168.49.2:8443/readyz
+
+
+kubectl create ns probes
+
+# search health from kubernetes.io find a doc for health check
+kubectl apply -f task5-pod.yaml --dry-run=client
+
+kubectl apply -f task5-pod.yaml 
+
+kubectl get pods -n probes
+
+kubectl describe pod probepod -n probes
 ```
 
 
