@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    type: store
+  name: storepod
+  namespace: default
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: vol
+    hostPath:
+      path: /home/docker/webapp
+  containers:
+  - name: pv-recycler
+    image: nginx:latest
+    volumeMounts:
+    - name: vol
+      mountPath: /usr/share/nginx/html

@@ -174,6 +174,50 @@ kubectl label pods nevatest type=tester
 # remove label type and retry .
 kubectl label pods nevatest type-
 
+```
+
+## Task 9 Persistent Volumn
+
+```bash
+
+minikube ssh 
+
+echo "welcome to store pod" > /home/docker/webapp/index.html
+
+# search Persistent Volumes
+kubectl apply -f task9-pv.yaml
+
+kubectl expose pod storepod --type=NodePort
+
+# edit the svc storepod , modify the node-port to 32032
+kubectl edit svc storepod 
+
+kubectl get all -l=type=store   
+# get the ip the storepod service 
+
+minikube ssh 
+curl 10.100.119.18:32032
+
+#caution won't work on mac, since the network on mac of docker is isolated from the host.
+curl $(minikube ip):32032 
+
+```
+
+## Task 10 Use HELM 
+
+```bash
+brew install helm
+
+helm -h | grep repo -C 5
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm install mysql1 bitnami/mysql 
+```
+
+
+## Task 11 managing resource restriction 
+```bash
 
 
 ```
