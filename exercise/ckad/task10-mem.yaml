@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: snowdeploy
+  namespace: nabraska
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: nginx:latest
+    resources:
+      requests:
+        memory: "64Mi"
+      limits:
+        memory: "128Mi"
