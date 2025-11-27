@@ -242,5 +242,43 @@ kubectl set resources deployment snowdeploy --limits=memory=128Mi --requests=mem
 
 ```
 
+## Task 12 Create Cannary Deployment 
+
+```shell
+kubectl create namespace birds
+
+kubectl create deploy oldbirds --image=nginx:1.17 -n birds --dry-run=client -o yaml > task12-oldbirds-dp.yaml
+# caution , you need to attach label type=allbirds to both deploy & pod level.
+kubectl create deploy newbirds --image=nginx:1.17 -n birds --dry-run=client -o yaml > task12-newbirds-dp.yaml
+
+
+kubectl expose deployment -n birds  oldbirds --selector type=allbirds --type=NodePort --port 80
+
+kubectl edit service -n birds oldbirds 
+# update the nodePort field to 32323
+kubectl describe -n birds service oldbirds
+# will see the pords 80:32323
+
+# but minikube on mac, its network is isolated. 
+# so we have to go to minikube host
+minikube ssh
+
+curl localhost:32323
+#or use ip of the service
+curl 10.110.227.250
+
+kubectl get pods -n birds --show-labels
+
+
+kubectl describe -n birds service oldbirds
+
+# to let 20% to new , 80 % to old , we can juset set replicas of old deploy to 4
+kubectl scale -n birds deployment oldbirds --replicas=4 
+
+kubectl describe -n birds service oldbirds
+# you will see ips of oldbirds are attached to the service.
+# Endpoints:                10.244.0.48:80,10.244.0.49:80,10.244.0.51:80 + 1 more...
+
+```
 
 

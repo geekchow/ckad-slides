@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: oldbirds
+    type: allbirds
+  name: oldbirds
+  namespace: birds
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oldbirds
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: oldbirds
+        type: allbirds
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        resources: {}
+status: {}
