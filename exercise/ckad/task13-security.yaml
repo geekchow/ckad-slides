@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: securedpod
+spec:
+  securityContext:
+    supplementalGroups: [2000]
+  containers:
+  - name: securedpod
+    image: nginx:latest
+    securityContext:
+      allowPrivilegeEscalation: false

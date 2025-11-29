@@ -281,4 +281,41 @@ kubectl describe -n birds service oldbirds
 
 ```
 
+## Task 13 Security Context 
 
+```bash
+#search securitycontext in kubernetes.io
+
+vi task13-security.yaml
+
+kubectl apply -f task13-security.yaml --dry-run=client
+
+kubectl apply -f task13-security.yaml
+```
+
+## Task 14 Using Docker file 
+
+```bash
+docker build --help | less
+
+docker build -f task14-dockerfile -t myapp:1.0 .
+
+docker save --help | less
+
+docker save myapp:1.0 -o /tmp/myapp.tar
+```
+
+## Task 15 User Service Account 
+
+```bash
+kubectl create ns oklahoma
+
+kubectl create sa secure -n oklahoma
+
+kubectl run pod securepod -n oklahoma --image=nginx:latest --dry-run=client -o yaml
+
+kubectl explain pod.spec | less
+ 
+#edit the task15.yaml file append serviceAccountName property
+
+```
