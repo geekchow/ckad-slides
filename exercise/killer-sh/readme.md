@@ -30,3 +30,24 @@ kubectl rollout undo deployment dp1
 # delete pods immediately 
 kubectl delete pod pod1 --foce --grace-period=0
 ```
+
+## Question 10
+
+![Question 10](q-10.png)
+
+![Answer](q-10-answer.png)
+
+![alt text](image-1.png)
+
+## Question 11
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
+
+![alt text](image-5.png)
+
+![alt text](image-6.png)
+
