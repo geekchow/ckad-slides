@@ -17,12 +17,12 @@ spec:
         app: project-earthflower
     spec:
       containers:
-      - image: httpd:2.4.41-alpine
-        name: httpd
-        volumeMounts:
-        - name: mypd
-          mountPath: /tmp/project-data  
+        - image: httpd:2.4.41-alpine
+          name: httpd
+          volumeMounts:
+            - name: mypd
+              mountPath: /tmp/project-data  
       volumes:
-      - name: mypd
-        persistentVolumeClaim:
-          claimName: earth-project-earthflower-pvc 
+        - name: mypd
+          persistentVolumeClaim:
+            claimName: earth-project-earthflower-pvc 
