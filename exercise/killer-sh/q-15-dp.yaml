@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-moon
+  name: web-moon
+  namespace: moon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-moon
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web-moon
+    spec:
+      containers:
+      - image: nginx:alpine
+        name: nginx
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+        - name: config-volume
+          configMap:
+            name: configmap-web-app-html

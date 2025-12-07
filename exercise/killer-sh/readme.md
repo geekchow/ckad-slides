@@ -1,6 +1,6 @@
 # killer.sh exercise
 
-
+https://www.youtube.com/watch?v=LFMp-DgJtoo&list=PLpbwBK0ptssyIgAoHR-611wt3O9wobS8T
 
 ## Question 6
 
@@ -75,6 +75,8 @@ Docker image operations
 
 ![Question 13](q-13.png)
 
+Storage Class & Persistent Volume Claim
+
 ```bash
 k create ns moon
 # create storage class
@@ -91,6 +93,8 @@ k get pvc -n moon
 ```
 
 ## Question 14
+
+Secrets & enviroment variable of PODs
 
 ![question 14](q-14.png)
 
@@ -111,4 +115,38 @@ k -n moon describe pod-14
 k exec -it -n moon pod-14 -- /bin/sh
 
 printenv | grep SECRET
+```
+
+## Question 15
+
+refer ConfigMap from pod
+
+![question 15](q-15.png)
+
+```bash
+# check how to create a configmap from a file
+k create cm -h | less
+
+echo index from question 15 > index.html
+
+# create configmap
+k create configmap configmap-web-app-html --from-file=index.html=./index.html -n moon 
+
+# use cmd to create a deployment draft.
+k create -n moon deployment web-moon --image=nginx:alpine --dry-run=client -o yaml > q-15-dp.yaml 
+
+#search configmap in kubernetes.io
+# append config map as volume.
+k apply -f q-15-dp.yaml 
+
+# ssh onto the web-moon pod and verify the nginx index.html page
+k exec -it -n moon web-moon-849cf64f6c-6nwbc  -- /bin/sh
+
+curl localhost
+
+# get pods ip address
+k get pods -n moon -o wide
+
+# curl the moon-web pod from a tmp pod
+k run -n moon tmp --image=nginx:alpine --restart=Never --rm -i -- curl 10.244.0.84 
 ```
