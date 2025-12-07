@@ -51,3 +51,15 @@ kubectl delete pod pod1 --foce --grace-period=0
 
 ![alt text](image-6.png)
 
+## Question 12 
+
+![Question 12](q-12.png)
+
+![Persistent Volume](q-12-pv.png)
+
+![Persistent Volume Claims](q-12-pvc.png)
+
+![create dp from cmd](q-12-dp-cmd.png)
+
+![deploy use pvc](q-12-dp-yaml.png)
+
