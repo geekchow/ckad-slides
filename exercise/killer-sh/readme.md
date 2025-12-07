@@ -1,3 +1,5 @@
+# killer.sh exercise
+
 
 
 ## Question 6
@@ -69,3 +71,21 @@ Docker image operations
 
 ![deploy use pvc](q-12-dp-yaml.png)
 
+## Question 13
+
+![Question 13](q-13.png)
+
+```bash
+k create ns moon
+# create storage class
+# search storageclass
+k apply -f q-13-sc.yaml
+
+k get sc -n moon
+
+# search 'persistentvolumeclaim'
+k apply -f q-13-pvc.yaml
+
+k get pvc -n moon
+
+```
