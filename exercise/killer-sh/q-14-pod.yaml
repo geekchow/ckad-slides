@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-14
+  namespace: moon 
+spec:
+  containers:
+  - name: pod-14
+    image: nginx
+    env:
+    - name: SECRET1_USER
+      valueFrom:
+        secretKeyRef:
+          name: secret1
+          key: user
+    - name: SECRET1_PASS
+      valueFrom:
+        secretKeyRef:
+          name: secret1
+          key: pass

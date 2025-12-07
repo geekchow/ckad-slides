@@ -89,3 +89,26 @@ k apply -f q-13-pvc.yaml
 k get pvc -n moon
 
 ```
+
+## Question 14
+
+![question 14](q-14.png)
+
+```bash
+k create secret generic -h | less
+
+k create secret -n moon generic secret1 --from-literal=user=test  --from-literal=pass=pwd
+
+k get secrets -n moon secret1 -o yaml 
+
+# search 'secret'
+k apply -f q-14-pod.yaml
+
+k get pods -n moon 
+
+k -n moon describe pod-14
+
+k exec -it -n moon pod-14 -- /bin/sh
+
+printenv | grep SECRET
+```
