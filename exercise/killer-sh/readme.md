@@ -24,7 +24,7 @@ kubectl rollout undo deployment dp1
 
 ## Question 9
 
-![alt text](image.png)
+![question 09](q-09.png)
 
 ```shell
 # delete pods immediately 
@@ -37,19 +37,21 @@ kubectl delete pod pod1 --foce --grace-period=0
 
 ![Answer](q-10-answer.png)
 
-![alt text](image-1.png)
+![Run tmp pod](q-10-tmp-pod.png)
 
 ## Question 11
 
-![alt text](image-2.png)
+Docker image operations
 
-![alt text](image-3.png)
+![Question 11](q-11.png)
 
-![alt text](image-4.png)
+![Q11-part one](q-11-build-docker-image.png)
 
-![alt text](image-5.png)
+![Q11-part two](q-11-podman-image.png)
 
-![alt text](image-6.png)
+![q 11 podman check](q-11-podman-check.png)
+
+![q 11 podman logs](q-11-podman-logs.png)
 
 ## Question 12 
 
