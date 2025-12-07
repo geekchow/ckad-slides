@@ -7,20 +7,20 @@ metadata:
   name: pod6
 spec:
   containers:
-  - args:
-    - sh
+  - command:
+    - sh 
     - -c
     - touch /tmp/ready && sleep 1d
     image: busybox:1.31.0
     name: pod6
-    readinessProbe:
+    resources: {}
+    livenessProbe:
       exec:
         command:
-        - cat
-        - /tmp/ready
+        - sh
+        - -c
+        - cat /tmp/ready
       initialDelaySeconds: 5
       periodSeconds: 10
-    resources: {}
   dnsPolicy: ClusterFirst
   restartPolicy: Always
-status: {}

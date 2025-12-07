@@ -2,10 +2,14 @@
 
 ## Question 6
 
-```bash
-k run pod6 --dry-run=client  --image=busybox:1.31.0 -o yaml -- "touch /tmp/ready && sleep 1d" > 6.yaml
+![question 6](<q-06.png>)
 
-k apply -f 6.yaml
+```bash
+k run tmp --image=busybox:1.31.0 --restart=Never -it /bin/sh
+
+k run pod6 --image=busybox:1.31.0 --command "touch /tmp/ready" --dry-run=client -o yaml > q-06-pod.yaml
+
+k apply -f q-06-pod.yaml
 ```
 
 ## Question 8 

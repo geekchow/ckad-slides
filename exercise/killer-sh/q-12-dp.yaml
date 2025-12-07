@@ -23,6 +23,6 @@ spec:
         - name: mypd
           mountPath: /tmp/project-data  
       volumes:
-        - name: mypd
-          persistentVolumeClaim:
-            claimName: earth-project-earthflower-pvc 
+      - name: mypd
+        persistentVolumeClaim:
+          claimName: earth-project-earthflower-pvc 
