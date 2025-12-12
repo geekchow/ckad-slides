@@ -150,3 +150,31 @@ k get pods -n moon -o wide
 # curl the moon-web pod from a tmp pod
 k run -n moon tmp --image=nginx:alpine --restart=Never --rm -i -- curl 10.244.0.84 
 ```
+
+## Question 16
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+![alt text](image.png)
+
+
+## Question 17 
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
+
+![alt text](image-5.png)
+
+## Question 18
+
+![alt text](image-7.png)
+
+![alt text](image-6.png)
+
+![alt text](image-8.png)
+
+## Question 19
+
