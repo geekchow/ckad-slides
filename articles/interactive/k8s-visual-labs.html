@@ -1,0 +1,682 @@
+<title>Kubernetes Visual Labs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a lab bench. Tabs across the top, each lab is controls (left) + live cluster view (right), stacking on phones. */
+:root {
+  --bg: #F2F5F4;
+  --surface: #FFFFFF;
+  --ink: #15201C;
+  --muted: #586964;
+  --line: #D3DCD8;
+  --accent: #0D6D63;
+  --accent-soft: #DAEEEA;
+  --old: #4651C4;
+  --old-soft: #E2E4F9;
+  --new: #B9620A;
+  --new-soft: #FAE9D6;
+  --ok: #1B7F46;
+  --ok-soft: #DCF2E4;
+  --bad: #B8322A;
+  --bad-soft: #F8DFDC;
+  --code-bg: #EAEFED;
+  --font-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1412; --surface: #161F1C; --ink: #E2EBE7; --muted: #94A49E; --line: #2A3632;
+    --accent: #3EC1B1; --accent-soft: #133A35; --old: #9097F2; --old-soft: #232750;
+    --new: #F0A04B; --new-soft: #402A12; --ok: #4FC383; --ok-soft: #12321F;
+    --bad: #F27D71; --bad-soft: #3E1916; --code-bg: #111916; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1412; --surface: #161F1C; --ink: #E2EBE7; --muted: #94A49E; --line: #2A3632;
+  --accent: #3EC1B1; --accent-soft: #133A35; --old: #9097F2; --old-soft: #232750;
+  --new: #F0A04B; --new-soft: #402A12; --ok: #4FC383; --ok-soft: #12321F;
+  --bad: #F27D71; --bad-soft: #3E1916; --code-bg: #111916; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 24px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 4.5vw, 40px); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+code, pre, .mono { font-family: var(--font-mono); font-size: 13px; }
+.lede { color: var(--muted); max-width: 68ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+header { display: grid; gap: 10px; }
+
+nav.tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); }
+nav.tabs button {
+  font: 600 14px var(--font-body); color: var(--muted); background: none; border: 0;
+  padding: 10px 14px; border-bottom: 3px solid transparent; cursor: pointer; margin-bottom: -1px;
+}
+nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+nav.tabs button:hover { color: var(--ink); }
+button:focus-visible, input:focus-visible, select:focus-visible, td.cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.lab { display: grid; gap: 20px; }
+.lab-head { display: grid; gap: 6px; }
+.bench { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 820px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; font-size: 13px; }
+.field .hint { font-size: 12px; color: var(--muted); }
+input[type="text"], input[type="number"], select {
+  font: 14px var(--font-mono); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; width: 100%;
+}
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn {
+  font: 600 13px var(--font-body); border-radius: 6px; padding: 7px 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.chipbtn { font: 500 12px var(--font-mono); padding: 5px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.chipbtn:hover, .chipbtn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+pre.code { background: var(--code-bg); border-radius: 8px; padding: 12px 14px; margin: 0; overflow-x: auto; line-height: 1.5; color: var(--ink); }
+.math { display: grid; gap: 6px; font-size: 14px; }
+.math b { font-family: var(--font-mono); font-weight: 500; }
+.note { font-size: 13px; color: var(--muted); }
+.err { color: var(--bad); font-weight: 600; font-size: 14px; }
+
+/* Rolling update timeline */
+.timeline-wrap { overflow-x: auto; }
+table.timeline { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+table.timeline th { text-align: left; font: 600 12px var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.timeline td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 13px; }
+table.timeline tr.hide { display: none; }
+table.timeline tr.flash td { background: var(--accent-soft); }
+td.step { font-family: var(--font-mono); white-space: nowrap; color: var(--muted); }
+td.num { font-family: var(--font-mono); white-space: nowrap; }
+.pods { display: flex; flex-wrap: wrap; gap: 4px; min-width: 160px; }
+.pod { width: 22px; height: 22px; border-radius: 5px; display: inline-grid; place-items: center; font: 600 10px var(--font-mono); }
+.pod.old { background: var(--old); color: var(--surface); }
+.pod.new { background: var(--new); color: var(--surface); }
+.pod.starting { background: repeating-linear-gradient(135deg, var(--new-soft) 0 4px, transparent 4px 8px); border: 1.5px dashed var(--new); color: var(--new); }
+.pod.gone { background: transparent; border: 1.5px dashed var(--old); color: var(--old); opacity: 0.55; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend .pod { width: 14px; height: 14px; }
+
+/* Services lab */
+.podlist { display: grid; gap: 8px; }
+.podcard { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
+.podcard.match { border-color: var(--ok); box-shadow: inset 4px 0 0 var(--ok); }
+.podcard.match.notready { border-color: var(--new); box-shadow: inset 4px 0 0 var(--new); }
+.podcard .pname { font: 600 13px var(--font-mono); overflow-wrap: anywhere; }
+.podcard .meta { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+.podcard input[type="text"] { grid-column: 1 / -1; font-size: 12px; padding: 5px 8px; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.toggle input { accent-color: var(--ok); }
+.pill { display: inline-block; font: 600 11px var(--font-mono); padding: 2px 8px; border-radius: 999px; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.warn { background: var(--new-soft); color: var(--new); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+.diag { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.diag li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 14px; }
+.share { display: grid; gap: 6px; }
+.share .bar { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr) 48px; gap: 10px; align-items: center; font: 12px var(--font-mono); }
+.share .track { height: 10px; background: var(--code-bg); border-radius: 999px; overflow: hidden; }
+.share .fill { height: 100%; border-radius: 999px; }
+.share .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.share .pct { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* NetworkPolicy lab */
+.polist { display: grid; gap: 6px; }
+.polrow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13px; }
+.polrow input { accent-color: var(--accent); }
+.polrow .pn { font-family: var(--font-mono); overflow-wrap: anywhere; }
+.polrow .view { font: 600 12px var(--font-body); background: none; border: 0; color: var(--accent); cursor: pointer; padding: 2px 4px; }
+.polrow .view[aria-pressed="true"] { text-decoration: underline; }
+.matrix-wrap { overflow-x: auto; }
+table.matrix { border-collapse: separate; border-spacing: 4px; font: 12px var(--font-mono); }
+table.matrix th { font-weight: 500; color: var(--muted); padding: 4px 6px; white-space: nowrap; }
+table.matrix th.col { writing-mode: horizontal-tb; text-align: center; }
+table.matrix th.rowh { text-align: right; }
+table.matrix th small { display: block; font-size: 10px; opacity: 0.8; }
+td.cell { width: 74px; height: 38px; text-align: center; border-radius: 6px; cursor: pointer; font-weight: 600; border: 2px solid transparent; }
+td.cell.allow { background: var(--ok-soft); color: var(--ok); }
+td.cell.deny { background: var(--bad-soft); color: var(--bad); }
+td.cell.self { background: transparent; color: var(--muted); cursor: default; }
+td.cell.sel { border-color: var(--ink); }
+.verdict { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.verdict .big { font: 700 18px var(--font-display); }
+.reasons { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.switch { display: flex; gap: 10px; align-items: center; font-size: 13px; font-weight: 600; }
+.switch input { accent-color: var(--accent); width: 16px; height: 16px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 1000px) { .split { grid-template-columns: minmax(0, 1fr); } }
+footer { font-size: 13px; color: var(--muted); }
+footer a { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Working with Kubernetes · companion labs</div>
+    <h1>Kubernetes Visual Labs</h1>
+    <p class="lede">Three small simulators for the parts of Kubernetes that are hard to picture from YAML alone. Change the inputs and watch what the controllers, Services and network plugin would do.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Labs">
+    <button role="tab" id="tab-rollout" aria-controls="rollout" aria-selected="true">Rolling update</button>
+    <button role="tab" id="tab-services" aria-controls="services" aria-selected="false">Services &amp; selectors</button>
+    <button role="tab" id="tab-netpol" aria-controls="netpol" aria-selected="false">NetworkPolicy</button>
+  </nav>
+
+  <!-- ============ ROLLING UPDATE ============ -->
+  <section class="lab" id="rollout" role="tabpanel" aria-labelledby="tab-rollout">
+    <div class="lab-head">
+      <h2>How a Deployment replaces its Pods</h2>
+      <p class="lede">A rolling update moves Pods from the old ReplicaSet to the new one. <code>maxSurge</code> caps how many extra Pods may exist, and <code>maxUnavailable</code> caps how many may be missing. Each row below is one controller pass. A new Pod becomes Ready one pass after it is created.</p>
+    </div>
+    <div class="bench">
+      <div class="panel">
+        <div class="field">
+          <label for="ru-replicas">replicas: <span id="ru-replicas-val" class="mono">4</span></label>
+          <input type="range" id="ru-replicas" min="1" max="10" value="4">
+        </div>
+        <div class="field">
+          <label for="ru-surge">maxSurge</label>
+          <input type="text" id="ru-surge" value="25%" autocomplete="off">
+          <span class="hint">A number or a percentage. Percentages round <b>up</b>.</span>
+        </div>
+        <div class="field">
+          <label for="ru-unavail">maxUnavailable</label>
+          <input type="text" id="ru-unavail" value="25%" autocomplete="off">
+          <span class="hint">A number or a percentage. Percentages round <b>down</b>.</span>
+        </div>
+        <div class="row" aria-label="Presets">
+          <button class="chipbtn" data-ru="25%,25%">default 25% / 25%</button>
+          <button class="chipbtn" data-ru="1,0">safe: 1 / 0</button>
+          <button class="chipbtn" data-ru="0,1">no extra capacity: 0 / 1</button>
+          <button class="chipbtn" data-ru="100%,0">fast: 100% / 0</button>
+          <button class="chipbtn" data-ru="50%,50%">task 6: 50% / 50%</button>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="ru-play">Replay rollout</button>
+        </div>
+        <pre class="code" id="ru-yaml"></pre>
+      </div>
+      <div class="panel">
+        <div class="math" id="ru-math"></div>
+        <div class="legend">
+          <span><i class="pod old"></i>old Pod (Ready)</span>
+          <span><i class="pod starting"></i>new Pod starting</span>
+          <span><i class="pod new"></i>new Pod Ready</span>
+          <span><i class="pod gone"></i>old Pod terminated this pass</span>
+        </div>
+        <div class="timeline-wrap">
+          <table class="timeline">
+            <thead><tr><th>Pass</th><th>Pods</th><th>Total / max</th><th>Ready / min</th></tr></thead>
+            <tbody id="ru-body"></tbody>
+          </table>
+        </div>
+        <p class="note">This is a simplified model of the Deployment controller. Real timing depends on image pulls, readiness probes and <code>minReadySeconds</code>, but the limits are the same.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section class="lab" id="services" role="tabpanel" aria-labelledby="tab-services" hidden>
+    <div class="lab-head">
+      <h2>Which Pods does my Service reach?</h2>
+      <p class="lede">A Service sends traffic to every Pod whose labels match <b>all</b> of its selector pairs and that is Ready. Edit the selector, the Pod labels or readiness, and see the endpoints, the traffic share and what <code>curl</code> would return.</p>
+    </div>
+    <div class="bench">
+      <div class="panel">
+        <div class="field">
+          <label>Try a scenario</label>
+          <div class="row" id="svc-scenarios">
+            <button class="chipbtn" data-scn="healthy">healthy</button>
+            <button class="chipbtn" data-scn="typo">selector typo</button>
+            <button class="chipbtn" data-scn="port">wrong targetPort</button>
+            <button class="chipbtn" data-scn="notready">Pods not Ready</button>
+            <button class="chipbtn" data-scn="v2only">only v2</button>
+            <button class="chipbtn" data-scn="canary">canary 3:1</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="svc-selector">spec.selector</label>
+          <input type="text" id="svc-selector" value="app=web" autocomplete="off">
+          <span class="hint">Comma-separated <code>key=value</code> pairs.</span>
+        </div>
+        <div class="row">
+          <div class="field" style="flex:1 1 120px">
+            <label for="svc-port">port</label>
+            <input type="number" id="svc-port" value="80" min="1" max="65535">
+          </div>
+          <div class="field" style="flex:1 1 120px">
+            <label for="svc-target">targetPort</label>
+            <input type="number" id="svc-target" value="80" min="1" max="65535">
+          </div>
+        </div>
+        <pre class="code" id="svc-yaml"></pre>
+      </div>
+      <div class="panel">
+        <div class="split">
+          <div class="field" style="gap:10px">
+            <h3>Pods in namespace <code>default</code></h3>
+            <div class="podlist" id="svc-pods"></div>
+          </div>
+          <div style="display:grid;gap:16px;min-width:0">
+            <div class="field" style="gap:10px">
+              <h3>Diagnosis</h3>
+              <ul class="diag" id="svc-diag"></ul>
+            </div>
+            <div class="field" style="gap:10px">
+              <h3>Traffic share</h3>
+              <div class="share" id="svc-share"></div>
+            </div>
+            <div class="field" style="gap:10px">
+              <h3>From a temporary Pod</h3>
+              <pre class="code" id="svc-curl"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NETWORKPOLICY ============ -->
+  <section class="lab" id="netpol" role="tabpanel" aria-labelledby="tab-netpol" hidden>
+    <div class="lab-head">
+      <h2>Who can talk to whom?</h2>
+      <p class="lede">With no policies, every Pod can reach every Pod. Once a policy selects a Pod for Ingress, only traffic that some rule allows gets in. Policies add up and never conflict. Turn policies on and off and click a cell to see why.</p>
+    </div>
+    <div class="bench">
+      <div class="panel">
+        <label class="switch"><input type="checkbox" id="np-cni" checked> CNI enforces NetworkPolicy (Calico)</label>
+        <div class="field">
+          <label>Policies</label>
+          <div class="polist" id="np-list"></div>
+        </div>
+        <div class="field">
+          <label>Namespaces</label>
+          <pre class="code">default     team=web
+monitoring  team=ops</pre>
+        </div>
+        <div class="field">
+          <label id="np-yaml-title">YAML</label>
+          <pre class="code" id="np-yaml"></pre>
+        </div>
+      </div>
+      <div class="panel">
+        <div>
+          <h3 style="margin-bottom:6px">Ingress matrix <span class="note" style="font-weight:400">· rows send, columns receive on their port</span></h3>
+          <div class="matrix-wrap"><table class="matrix" id="np-matrix"></table></div>
+        </div>
+        <div class="field" style="gap:10px">
+          <div class="verdict" id="np-verdict"></div>
+          <ol class="reasons" id="np-reasons"></ol>
+          <pre class="code" id="np-cmd"></pre>
+        </div>
+        <p class="note">Only Ingress is modelled. Egress rules work the same way in the other direction. If you lock down egress, remember to allow DNS on port 53.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Companion to the <a href="https://github.com/geekchow/ckad-slides/tree/main/articles">Working with Kubernetes</a> article series: rolling updates (articles 4 and 10), Services and NetworkPolicy (article 7).</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ---------- tabs ---------- */
+  var tabs = ["rollout", "services", "netpol"];
+  function showTab(name) {
+    if (tabs.indexOf(name) < 0) name = "rollout";
+    tabs.forEach(function (t) {
+      $(t).hidden = t !== name;
+      $("tab-" + t).setAttribute("aria-selected", t === name ? "true" : "false");
+    });
+  }
+  tabs.forEach(function (t) {
+    $("tab-" + t).addEventListener("click", function () {
+      showTab(t);
+      try { history.replaceState(null, "", "#" + t); } catch (e) {}
+    });
+  });
+  showTab((location.hash || "").replace("#", ""));
+  window.addEventListener("hashchange", function () { showTab(location.hash.replace("#", "")); });
+
+  /* ---------- rolling update ---------- */
+  function parseIntOrPct(str, replicas, roundUp) {
+    str = String(str).trim();
+    var m = /^(\d+)%$/.exec(str);
+    if (m) {
+      var v = replicas * parseInt(m[1], 10) / 100;
+      return { n: roundUp ? Math.ceil(v) : Math.floor(v), pct: true };
+    }
+    if (/^\d+$/.test(str)) return { n: parseInt(str, 10), pct: false };
+    return null;
+  }
+  function simulate(r, surge, unavail) {
+    var maxTotal = r + surge, minAvail = Math.max(0, r - unavail);
+    var old = r, starting = 0, ready = 0, steps = [];
+    steps.push({ old: old, starting: 0, ready: 0, gone: 0, label: "before" });
+    for (var i = 0; i < 60; i++) {
+      ready += starting; starting = 0;                              // Pods created last pass are Ready now
+      var removable = Math.max(0, old + ready - minAvail);         // scale down old within maxUnavailable
+      var gone = Math.min(old, removable); old -= gone;
+      var room = maxTotal - (old + ready + starting);              // scale up new within maxSurge
+      var add = Math.max(0, Math.min(room, r - ready - starting));
+      starting += add;
+      steps.push({ old: old, starting: starting, ready: ready, gone: gone });
+      if (old === 0 && starting === 0 && ready === r) break;
+    }
+    return { steps: steps, maxTotal: maxTotal, minAvail: minAvail };
+  }
+  function pods(cls, n, ch) { var s = ""; for (var i = 0; i < n; i++) s += '<i class="pod ' + cls + '">' + ch + "</i>"; return s; }
+  var ruTimer = null;
+  function renderRollout(animate) {
+    var r = parseInt($("ru-replicas").value, 10);
+    $("ru-replicas-val").textContent = r;
+    var s = parseIntOrPct($("ru-surge").value, r, true);
+    var u = parseIntOrPct($("ru-unavail").value, r, false);
+    var surgeTxt = $("ru-surge").value.trim(), unTxt = $("ru-unavail").value.trim();
+    var yamlS = /%$/.test(surgeTxt) ? surgeTxt : surgeTxt, yamlU = unTxt;
+    $("ru-yaml").textContent =
+      "spec:\n  replicas: " + r + "\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: " + yamlS + "\n      maxUnavailable: " + yamlU +
+      "\n\n# trigger it:\nkubectl set image deploy/web nginx=nginx:1.27\nkubectl rollout status deploy/web";
+    var body = $("ru-body");
+    if (!s || !u) {
+      $("ru-math").innerHTML = '<p class="err">Use a whole number (2) or a percentage (25%).</p>';
+      body.innerHTML = ""; return;
+    }
+    if (s.n === 0 && u.n === 0) {
+      $("ru-math").innerHTML = '<p class="err">maxSurge and maxUnavailable cannot both be 0. The rollout could never make progress, and the API server rejects it.</p>';
+      body.innerHTML = ""; return;
+    }
+    var sim = simulate(r, s.n, u.n);
+    $("ru-math").innerHTML =
+      "<div>maxSurge <b>" + esc(surgeTxt) + "</b> of " + r + (s.pct ? " → rounded up" : "") + " = <b>" + s.n + "</b> extra Pod" + (s.n === 1 ? "" : "s") + "</div>" +
+      "<div>maxUnavailable <b>" + esc(unTxt) + "</b> of " + r + (u.pct ? " → rounded down" : "") + " = <b>" + u.n + "</b> Pod" + (u.n === 1 ? "" : "s") + "</div>" +
+      "<div>During the rollout there are at most <b>" + sim.maxTotal + "</b> Pods and at least <b>" + sim.minAvail + "</b> Ready. It takes <b>" + (sim.steps.length - 1) + "</b> passes.</div>";
+    var html = "";
+    sim.steps.forEach(function (st, i) {
+      var total = st.old + st.starting + st.ready, avail = st.old + st.ready;
+      html += "<tr" + (animate && i > 0 ? ' class="hide"' : "") + ">" +
+        '<td class="step">' + (i === 0 ? "start" : "#" + i) + "</td>" +
+        '<td><div class="pods">' + pods("old", st.old, "v1") + pods("gone", st.gone, "×") + pods("new", st.ready, "v2") + pods("starting", st.starting, "…") + "</div></td>" +
+        '<td class="num">' + (i === 0 ? r : total) + " / " + sim.maxTotal + "</td>" +
+        '<td class="num">' + avail + " / " + sim.minAvail + "</td></tr>";
+    });
+    body.innerHTML = html;
+    if (ruTimer) { clearInterval(ruTimer); ruTimer = null; }
+    if (animate) {
+      var rows = body.querySelectorAll("tr"), k = 1;
+      ruTimer = setInterval(function () {
+        if (k >= rows.length) { clearInterval(ruTimer); ruTimer = null; return; }
+        rows[k].classList.remove("hide");
+        rows[k].classList.add("flash");
+        var prev = rows[k - 1]; if (prev) prev.classList.remove("flash");
+        k++;
+        if (k >= rows.length) setTimeout(function () { rows[rows.length - 1].classList.remove("flash"); }, 700);
+      }, 650);
+    }
+  }
+  ["ru-replicas", "ru-surge", "ru-unavail"].forEach(function (id) { $(id).addEventListener("input", function () { renderRollout(false); }); });
+  document.querySelectorAll("[data-ru]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-ru").split(",");
+      $("ru-surge").value = p[0]; $("ru-unavail").value = p[1];
+      if (b.textContent.indexOf("task 6") === 0) $("ru-replicas").value = 3;
+      renderRollout(true);
+    });
+  });
+  $("ru-play").addEventListener("click", function () { renderRollout(true); });
+  renderRollout(false);
+
+  /* ---------- services ---------- */
+  var basePods = function () {
+    return [
+      { name: "web-v1-7d9f4-abc12", ip: "10.244.0.11", labels: "app=web,version=v1", port: 80, ready: true },
+      { name: "web-v1-7d9f4-def34", ip: "10.244.0.12", labels: "app=web,version=v1", port: 80, ready: true },
+      { name: "web-v1-7d9f4-gh567", ip: "10.244.0.13", labels: "app=web,version=v1", port: 80, ready: true },
+      { name: "web-v2-5c4b8-jk890", ip: "10.244.0.14", labels: "app=web,version=v2", port: 80, ready: true },
+      { name: "db-0", ip: "10.244.0.20", labels: "app=db", port: 5432, ready: true }
+    ];
+  };
+  var svcPods = basePods();
+  function parseLabels(str) {
+    var out = {}, ok = true;
+    String(str).split(",").map(function (s) { return s.trim(); }).filter(Boolean).forEach(function (pair) {
+      var m = /^([A-Za-z0-9._\/-]+)=([A-Za-z0-9._-]*)$/.exec(pair);
+      if (m) out[m[1]] = m[2]; else ok = false;
+    });
+    return ok ? out : null;
+  }
+  function matches(labels, sel) {
+    for (var k in sel) if (labels[k] !== sel[k]) return false;
+    return true;
+  }
+  function renderPods() {
+    var html = "";
+    svcPods.forEach(function (p, i) {
+      html += '<div class="podcard" data-i="' + i + '">' +
+        '<div><div class="pname">' + esc(p.name) + '</div><div class="meta">' + p.ip + " · containerPort " + p.port + "</div></div>" +
+        '<label class="toggle"><input type="checkbox" id="svc-ready-' + i + '"' + (p.ready ? " checked" : "") + "> Ready</label>" +
+        '<input type="text" id="svc-labels-' + i + '" value="' + esc(p.labels) + '" aria-label="Labels of ' + esc(p.name) + '" autocomplete="off">' +
+        "</div>";
+    });
+    $("svc-pods").innerHTML = html;
+    svcPods.forEach(function (p, i) {
+      $("svc-ready-" + i).addEventListener("change", function (e) { p.ready = e.target.checked; renderService(); });
+      $("svc-labels-" + i).addEventListener("input", function (e) { p.labels = e.target.value; renderService(); });
+    });
+  }
+  function renderService() {
+    var selStr = $("svc-selector").value, sel = parseLabels(selStr);
+    var port = parseInt($("svc-port").value, 10) || 80, target = parseInt($("svc-target").value, 10) || port;
+    var selYaml = sel ? Object.keys(sel).map(function (k) { return "    " + k + ": " + sel[k]; }).join("\n") : "    # invalid selector";
+    $("svc-yaml").textContent = "apiVersion: v1\nkind: Service\nmetadata:\n  name: web\nspec:\n  selector:\n" + (selYaml || "    {}") +
+      "\n  ports:\n  - port: " + port + "\n    targetPort: " + target;
+
+    var cards = $("svc-pods").children, diag = [], eps = [];
+    var matched = [];
+    svcPods.forEach(function (p, i) {
+      var l = parseLabels(p.labels) || {};
+      var m = sel && Object.keys(sel).length > 0 && matches(l, sel);
+      cards[i].classList.toggle("match", !!m);
+      cards[i].classList.toggle("notready", !!m && !p.ready);
+      if (m) { matched.push(p); if (p.ready) eps.push(p); }
+    });
+
+    if (!sel) diag.push(["bad", "error", "The selector must be <code>key=value</code> pairs separated by commas."]);
+    else if (Object.keys(sel).length === 0) diag.push(["bad", "no selector", "A Service without a selector gets no endpoints automatically. You would have to create EndpointSlices by hand."]);
+    else if (matched.length === 0) {
+      Object.keys(sel).forEach(function (k) {
+        var any = svcPods.some(function (p) { var l = parseLabels(p.labels) || {}; return l[k] === sel[k]; });
+        if (!any) {
+          var near = svcPods.some(function (p) { var l = parseLabels(p.labels) || {}; return Object.keys(l).some(function (kk) { return kk.toLowerCase() === k.toLowerCase() && String(l[kk]).toLowerCase() === String(sel[k]).toLowerCase(); }); });
+          diag.push(["bad", "no match", "No Pod has <code>" + esc(k) + "=" + esc(sel[k]) + "</code>." + (near ? " A Pod has the same label in different case. Labels are case-sensitive." : "")]);
+        }
+      });
+      if (!diag.length) diag.push(["bad", "no match", "Each pair matches some Pod, but no single Pod has <b>all</b> of them."]);
+    }
+    var notReady = matched.filter(function (p) { return !p.ready; });
+    if (notReady.length) diag.push(["warn", "not ready", notReady.length + " matching Pod" + (notReady.length > 1 ? "s are" : " is") + " not Ready (failing readinessProbe?), so " + (notReady.length > 1 ? "they are" : "it is") + " left out of the endpoints."]);
+    var wrongPort = eps.filter(function (p) { return p.port !== target; });
+    if (wrongPort.length) diag.push(["bad", "port", "targetPort is <code>" + target + "</code>, but " + (wrongPort.length === eps.length ? "the Pods listen" : wrongPort.length + " Pod(s) listen") + " on <code>" + wrongPort[0].port + "</code>. Connections to " + (wrongPort.length === eps.length ? "them" : "those") + " are refused."]);
+    var labelSets = {};
+    eps.forEach(function (p) { labelSets[p.labels] = (labelSets[p.labels] || 0) + 1; });
+    if (Object.keys(labelSets).length > 1) diag.push(["info", "mixed", "Endpoints come from more than one Deployment. This is how a Service-based canary works: traffic splits by Pod count."]);
+    if (eps.length && !wrongPort.length) diag.push(["ok", "ok", eps.length + " endpoint" + (eps.length > 1 ? "s" : "") + ": " + eps.map(function (p) { return p.ip + ":" + p.port; }).join(", ")]);
+    $("svc-diag").innerHTML = diag.map(function (d) { return '<li><span class="pill ' + d[0] + '">' + d[1] + "</span><span>" + d[2] + "</span></li>"; }).join("");
+
+    var share = "";
+    if (!eps.length) share = '<p class="note">No endpoints, so no traffic is delivered.</p>';
+    eps.forEach(function (p) {
+      var pct = Math.round(1000 / eps.length) / 10, bad = p.port !== target;
+      var l = parseLabels(p.labels) || {};
+      var color = bad ? "var(--bad)" : (l.version === "v2" ? "var(--new)" : "var(--old)");
+      share += '<div class="bar"><span class="lbl" title="' + esc(p.name) + '">' + esc(p.name) + '</span><span class="track"><span class="fill" style="display:block;width:' + pct + "%;background:" + color + '"></span></span><span class="pct">' + pct + "%</span></div>";
+    });
+    $("svc-share").innerHTML = share;
+
+    var cmd = "$ kubectl run tmp --rm -i --restart=Never --image=nginx:alpine -- \\\n    curl -s -m 2 web:" + port + "\n";
+    var good = eps.filter(function (p) { return p.port === target; });
+    if (!eps.length) cmd += "curl: (7) Failed to connect to web port " + port + ": Connection refused\n# no endpoints";
+    else if (!good.length) cmd += "curl: (7) Failed to connect to web port " + port + ": Connection refused\n# endpoints exist, but nothing listens on targetPort " + target;
+    else if (good.length < eps.length) cmd += "<!DOCTYPE html> ... Welcome to nginx! ...\n# but about " + Math.round(100 * (eps.length - good.length) / eps.length) + "% of requests fail: some endpoints have the wrong port";
+    else cmd += "<!DOCTYPE html> ... Welcome to nginx! ...";
+    cmd += "\n\n$ kubectl get endpoints web\nNAME   ENDPOINTS\nweb    " + (eps.length ? eps.slice(0, 3).map(function (p) { return p.ip + ":" + target; }).join(",") + (eps.length > 3 ? " + " + (eps.length - 3) + " more..." : "") : "<none>");
+    $("svc-curl").textContent = cmd;
+  }
+  var scenarios = {
+    healthy: function () { svcPods = basePods(); return { sel: "app=web", port: 80, target: 80 }; },
+    typo: function () { svcPods = basePods(); return { sel: "app=Web", port: 80, target: 80 }; },
+    port: function () { svcPods = basePods(); return { sel: "app=web", port: 80, target: 8080 }; },
+    notready: function () { svcPods = basePods(); svcPods[0].ready = false; svcPods[1].ready = false; return { sel: "app=web,version=v1", port: 80, target: 80 }; },
+    v2only: function () { svcPods = basePods(); return { sel: "app=web,version=v2", port: 80, target: 80 }; },
+    canary: function () {
+      svcPods = basePods();
+      svcPods.forEach(function (p) { if (p.labels.indexOf("app=web") === 0) p.labels += ",type=allbirds"; });
+      return { sel: "type=allbirds", port: 80, target: 80 };
+    }
+  };
+  document.querySelectorAll("[data-scn]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var s = scenarios[b.getAttribute("data-scn")]();
+      $("svc-selector").value = s.sel; $("svc-port").value = s.port; $("svc-target").value = s.target;
+      document.querySelectorAll("[data-scn]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      renderPods(); renderService();
+    });
+  });
+  ["svc-selector", "svc-port", "svc-target"].forEach(function (id) { $(id).addEventListener("input", renderService); });
+  renderPods(); renderService();
+
+  /* ---------- networkpolicy ---------- */
+  var namespaces = { default: { team: "web" }, monitoring: { team: "ops" } };
+  var npPods = [
+    { name: "frontend", ns: "default", labels: { app: "frontend" }, port: 80 },
+    { name: "api", ns: "default", labels: { app: "api", role: "backend" }, port: 8080 },
+    { name: "db", ns: "default", labels: { app: "db" }, port: 5432 },
+    { name: "tester", ns: "default", labels: { type: "tester" }, port: null },
+    { name: "prometheus", ns: "monitoring", labels: { app: "prometheus" }, port: 9090 },
+    { name: "debug", ns: "monitoring", labels: { app: "debug" }, port: null }
+  ];
+  var policies = [
+    { id: "deny", name: "default-deny-ingress", on: true, ns: "default", podSelector: {}, ingress: [],
+      yaml: "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: default-deny-ingress\n  namespace: default\nspec:\n  podSelector: {}        # every Pod in the namespace\n  policyTypes:\n  - Ingress\n  # no ingress rules: nothing is allowed in" },
+    { id: "api", name: "api-allow-frontend", on: true, ns: "default", podSelector: { app: "api" },
+      ingress: [{ from: [{ podSelector: { app: "frontend" } }], ports: [8080] }],
+      yaml: "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: api-allow-frontend\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: api\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - podSelector:\n        matchLabels:\n          app: frontend\n    ports:\n    - protocol: TCP\n      port: 8080" },
+    { id: "db", name: "db-allow-backend", on: true, ns: "default", podSelector: { app: "db" },
+      ingress: [{ from: [{ podSelector: { role: "backend" } }], ports: [5432] }],
+      yaml: "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: db-allow-backend\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: db\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - podSelector:\n        matchLabels:\n          role: backend\n    ports:\n    - protocol: TCP\n      port: 5432" },
+    { id: "front", name: "frontend-allow-all", on: false, ns: "default", podSelector: { app: "frontend" },
+      ingress: [{}],
+      yaml: "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: frontend-allow-all\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: frontend\n  policyTypes:\n  - Ingress\n  ingress:\n  - {}                   # one empty rule = allow from anywhere" },
+    { id: "and", name: "api-allow-prometheus (AND)", on: false, ns: "default", podSelector: { app: "api" },
+      ingress: [{ from: [{ namespaceSelector: { team: "ops" }, podSelector: { app: "prometheus" } }] }],
+      yaml: "# ONE list item with both selectors = AND\n# Pods labelled app=prometheus IN namespaces labelled team=ops\nspec:\n  podSelector:\n    matchLabels:\n      app: api\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          team: ops\n      podSelector:\n        matchLabels:\n          app: prometheus" },
+    { id: "or", name: "api-allow-monitoring (OR)", on: false, ns: "default", podSelector: { app: "api" },
+      ingress: [{ from: [{ namespaceSelector: { team: "ops" } }, { podSelector: { app: "prometheus" } }] }],
+      yaml: "# TWO list items = OR\n# any Pod in a team=ops namespace,\n# OR app=prometheus Pods in THIS namespace (default)\nspec:\n  podSelector:\n    matchLabels:\n      app: api\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          team: ops\n    - podSelector:\n        matchLabels:\n          app: prometheus" }
+  ];
+  var viewPolicy = "api", selCell = { src: "frontend", dst: "api" };
+
+  function selDesc(sel) { var k = Object.keys(sel); return k.length ? k.map(function (x) { return x + "=" + sel[x]; }).join(",") : "{} (all Pods)"; }
+  function peerMatches(peer, src, policyNs) {
+    var nsOk = peer.namespaceSelector ? matches(namespaces[src.ns], peer.namespaceSelector) : src.ns === policyNs;
+    var podOk = peer.podSelector ? matches(src.labels, peer.podSelector) : true;
+    return nsOk && podOk;
+  }
+  function peerDesc(peer, policyNs) {
+    var parts = [];
+    if (peer.namespaceSelector) parts.push("namespaces " + selDesc(peer.namespaceSelector));
+    if (peer.podSelector) parts.push("Pods " + selDesc(peer.podSelector) + (peer.namespaceSelector ? "" : " in " + policyNs));
+    return parts.join(" AND ");
+  }
+  function evaluate(src, dst) {
+    var cni = $("np-cni").checked, reasons = [];
+    if (!cni) return { allow: true, reasons: ["The network plugin does not enforce NetworkPolicy, so every policy is ignored and all traffic is allowed. Start Minikube with <code>--cni=calico</code>."] };
+    var selecting = policies.filter(function (p) { return p.on && p.ns === dst.ns && matches(dst.labels, p.podSelector); });
+    if (!selecting.length) return { allow: true, reasons: ["No enabled policy selects <b>" + dst.name + "</b>, so it is not isolated and all ingress is allowed."] };
+    reasons.push("<b>" + dst.name + "</b> is selected by " + selecting.map(function (p) { return "<code>" + esc(p.name) + "</code>"; }).join(", ") + ", so it only accepts traffic that a rule allows.");
+    var allowedBy = null;
+    selecting.forEach(function (p) {
+      if (!p.ingress.length) { reasons.push("<code>" + esc(p.name) + "</code> has no ingress rules. It allows nothing by itself."); return; }
+      p.ingress.forEach(function (rule) {
+        var fromOk = !rule.from || rule.from.some(function (peer) { return peerMatches(peer, src, p.ns); });
+        var portOk = !rule.ports || rule.ports.indexOf(dst.port) >= 0;
+        var what = !rule.from ? "any source" : rule.from.map(function (peer) { return peerDesc(peer, p.ns); }).join(" OR ");
+        if (fromOk && portOk) { allowedBy = allowedBy || p.name; reasons.push("<code>" + esc(p.name) + "</code> allows " + esc(what) + (rule.ports ? " on port " + rule.ports.join(",") : "") + ". <b>" + src.name + "</b> matches."); }
+        else if (!fromOk) reasons.push("<code>" + esc(p.name) + "</code> allows " + esc(what) + ". <b>" + src.name + "</b> (" + src.ns + ", " + selDesc(src.labels) + ") does not match.");
+        else reasons.push("<code>" + esc(p.name) + "</code> matches the source but only opens port " + rule.ports.join(",") + ".");
+      });
+    });
+    reasons.push(allowedBy ? "Policies add up, so one allowing rule is enough." : "No rule in any selecting policy allows this traffic, so it is dropped.");
+    return { allow: !!allowedBy, reasons: reasons };
+  }
+  function renderPolicies() {
+    $("np-list").innerHTML = policies.map(function (p, i) {
+      return '<div class="polrow"><input type="checkbox" id="np-p-' + i + '"' + (p.on ? " checked" : "") + ' aria-label="Enable ' + esc(p.name) + '">' +
+        '<label class="pn" for="np-p-' + i + '">' + esc(p.name) + "</label>" +
+        '<button class="view" data-view="' + p.id + '" aria-pressed="' + (p.id === viewPolicy ? "true" : "false") + '">YAML</button></div>';
+    }).join("");
+    policies.forEach(function (p, i) { $("np-p-" + i).addEventListener("change", function (e) { p.on = e.target.checked; renderMatrix(); }); });
+    document.querySelectorAll("[data-view]").forEach(function (b) {
+      b.addEventListener("click", function () { viewPolicy = b.getAttribute("data-view"); renderPolicies(); });
+    });
+    var vp = policies.filter(function (p) { return p.id === viewPolicy; })[0];
+    $("np-yaml-title").textContent = "YAML: " + vp.name;
+    $("np-yaml").textContent = vp.yaml;
+  }
+  function renderMatrix() {
+    var dsts = npPods.filter(function (p) { return p.port; });
+    var html = "<thead><tr><th></th>" + dsts.map(function (d) { return '<th class="col">' + d.name + "<small>:" + d.port + (d.ns !== "default" ? " · " + d.ns : "") + "</small></th>"; }).join("") + "</tr></thead><tbody>";
+    npPods.forEach(function (s) {
+      html += '<tr><th class="rowh">' + s.name + (s.ns !== "default" ? "<small>" + s.ns + "</small>" : "") + "</th>";
+      dsts.forEach(function (d) {
+        if (s === d) { html += '<td class="cell self">·</td>'; return; }
+        var r = evaluate(s, d), isSel = selCell.src === s.name && selCell.dst === d.name;
+        html += '<td class="cell ' + (r.allow ? "allow" : "deny") + (isSel ? " sel" : "") + '" tabindex="0" data-src="' + s.name + '" data-dst="' + d.name + '" aria-label="' + s.name + " to " + d.name + ": " + (r.allow ? "allowed" : "denied") + '">' + (r.allow ? "allow" : "deny") + "</td>";
+      });
+      html += "</tr>";
+    });
+    $("np-matrix").innerHTML = html + "</tbody>";
+    $("np-matrix").querySelectorAll("td[data-src]").forEach(function (td) {
+      var pick = function () { selCell = { src: td.getAttribute("data-src"), dst: td.getAttribute("data-dst") }; renderMatrix(); };
+      td.addEventListener("click", pick);
+      td.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    });
+    renderVerdict();
+  }
+  function renderVerdict() {
+    var src = npPods.filter(function (p) { return p.name === selCell.src; })[0];
+    var dst = npPods.filter(function (p) { return p.name === selCell.dst; })[0];
+    var r = evaluate(src, dst);
+    $("np-verdict").innerHTML = '<span class="big">' + src.name + " → " + dst.name + ":" + dst.port + '</span><span class="pill ' + (r.allow ? "ok" : "bad") + '">' + (r.allow ? "allowed" : "denied") + "</span>";
+    $("np-reasons").innerHTML = r.reasons.map(function (x) { return "<li>" + x + "</li>"; }).join("");
+    var host = dst.ns === src.ns ? dst.name : dst.name + "." + dst.ns;
+    $("np-cmd").textContent = "$ kubectl exec " + (src.ns !== "default" ? "-n " + src.ns + " " : "") + src.name + " -- wget --spider --timeout=1 " + host + ":" + dst.port + "\n" +
+      (r.allow ? "Connecting to " + host + ":" + dst.port + "\nremote file exists" : "Connecting to " + host + ":" + dst.port + "\nwget: download timed out");
+  }
+  $("np-cni").addEventListener("change", renderMatrix);
+  renderPolicies(); renderMatrix();
+})();
+</script>

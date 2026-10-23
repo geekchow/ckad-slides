@@ -36,6 +36,8 @@ A **Service** gives a set of Pods one stable virtual IP and DNS name, and load-b
 
 Services are **decoupled** from Deployments. A Service doesn't know which Deployment made the Pods, and deleting a Deployment doesn't delete its Service. This is a feature: one Service can cover Pods from **several** Deployments, which is how canary releases work ([article 10](10-deployment-strategies.md)).
 
+> **Try it:** the *Services & selectors* tab in the [interactive labs](interactive/k8s-visual-labs.html#services) shows which Pods become endpoints as you edit selectors, labels, readiness and `targetPort`.
+
 ### Service types
 
 | Type | Reachable from | How |
@@ -185,6 +187,8 @@ kubectl exec nevatest -- wget --spider --timeout=1 nevaginx    # remote file exi
 kubectl label pod nevatest type-                               # remove the label: blocked again
 kubectl describe netpol test-np                                # readable summary
 ```
+
+> **Try it:** the *NetworkPolicy* tab in the [interactive labs](interactive/k8s-visual-labs.html#netpol) shows an allow/deny matrix and explains each verdict. Compare the AND and OR policies there.
 
 ### Useful patterns
 

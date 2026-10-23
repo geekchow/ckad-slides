@@ -23,6 +23,14 @@ The series follows the shape of the CKAD (Certified Kubernetes Application Devel
 | 13 | [Extending Kubernetes: The API, CRDs and Operators](13-extending-the-api.md) | L14 |
 | 14 | [The CKAD Playbook: Speed, Habits and Common Mistakes](14-ckad-exam-playbook.md) | exercise/ckad, exercise/killer-sh |
 
+## Interactive labs
+
+[`interactive/k8s-visual-labs.html`](interactive/k8s-visual-labs.html) has three browser simulators that go with the articles. Clone the repo and open the file in a browser:
+
+- **Rolling update**: set `replicas`, `maxSurge` and `maxUnavailable`, then watch each controller pass ([article 4](04-pods-and-deployments.md), [article 10](10-deployment-strategies.md)).
+- **Services & selectors**: edit a selector, Pod labels and readiness, and see endpoints, traffic share and `curl` output ([article 7](07-services-and-networking.md)).
+- **NetworkPolicy**: turn policies on and off and see an allow/deny matrix with the reason for each cell, including the AND vs OR selector trap ([article 7](07-services-and-networking.md)).
+
 ## How to use these articles
 
 - **Have a cluster ready.** Article 3 shows how to start Minikube with the Calico network plugin. Most examples assume that setup.

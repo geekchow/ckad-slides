@@ -129,6 +129,8 @@ To move forward, scale newbirds up and oldbirds down. To roll back, delete newbi
 
 > The shared label must be in the **Pod template** labels. Labels on the Deployment's own `metadata` do not reach the Pods, and the Service selects Pods.
 
+> **Try it:** the *canary 3:1* scenario in the [interactive labs](interactive/k8s-visual-labs.html#services) shows the traffic share for a shared-label Service.
+
 The limit of this approach: the split is only as fine as your replica count (1 in 100 needs 100 Pods), and it is per connection, not per user.
 
 ### Ingress-based canary: weights

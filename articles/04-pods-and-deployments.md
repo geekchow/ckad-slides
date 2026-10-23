@@ -228,6 +228,8 @@ kubectl rollout undo deploy/updates --to-revision=1
 
 killer.sh Q8 is a typical case: a new revision is broken (bad image, failing Pods). Find it with `rollout history`, then `rollout undo` to the last good revision. Old ReplicaSets are kept, scaled to zero, which is why rollbacks are instant.
 
+> **Try it:** the *Rolling update* tab in the [interactive labs](interactive/k8s-visual-labs.html#rollout) steps through a rollout pass by pass for any `replicas`, `maxSurge` and `maxUnavailable`.
+
 The other strategy, `type: Recreate`, kills all old Pods before it starts new ones. Use it when two versions must never run at the same time (for example, a database schema change). It causes downtime.
 
 ## Key takeaways
