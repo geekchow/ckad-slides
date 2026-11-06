@@ -1,0 +1,19 @@
+{
+  "articles": {
+    "note": "CSDN publish record for the Chinese series (column: CKAD 认证备考). 'src' is repo-root-relative.",
+    "01-containers-and-images.md": {
+      "src": "articles-zh/01-containers-and-images.md",
+      "articleId": "170190309",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170190309",
+      "title": "01 · 容器与镜像：Kubernetes 的基本构件",
+      "published": "2026-11-06"
+    },
+    "02-kubernetes-architecture.md": {
+      "src": "articles-zh/02-kubernetes-architecture.md",
+      "articleId": "170190371",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170190371",
+      "title": "02 · Kubernetes 是怎么工作的：架构与资源模型",
+      "published": "2026-11-06"
+    }
+  }
+}
