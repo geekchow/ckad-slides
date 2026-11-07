@@ -14,6 +14,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170190371",
       "title": "02 · Kubernetes 是怎么工作的：架构与资源模型",
       "published": "2026-11-06"
+    },
+    "03-lab-setup-and-kubectl.md": {
+      "src": "articles-zh/03-lab-setup-and-kubectl.md",
+      "articleId": "170238537",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170238537",
+      "title": "03 · 搭建实验环境，用 kubectl 驾驭集群",
+      "published": "2026-11-07"
+    },
+    "04-pods-and-deployments.md": {
+      "src": "articles-zh/04-pods-and-deployments.md",
+      "articleId": "170238769",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170238769",
+      "title": "04 · 运行工作负载：Pod、多容器 Pod 与 Deployment",
+      "published": "2026-11-07"
     }
   }
 }
