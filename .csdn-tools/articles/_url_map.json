@@ -28,6 +28,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170238769",
       "title": "04 · 运行工作负载：Pod、多容器 Pod 与 Deployment",
       "published": "2026-11-07"
+    },
+    "05-configmaps-and-secrets.md": {
+      "src": "articles-zh/05-configmaps-and-secrets.md",
+      "articleId": "170287528",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170287528",
+      "title": "05 · 配置应用：环境变量、ConfigMap 与 Secret",
+      "published": "2026-11-08"
+    },
+    "06-storage.md": {
+      "src": "articles-zh/06-storage.md",
+      "articleId": "170287652",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170287652",
+      "title": "06 · 持久化数据：卷、PersistentVolume 与 StorageClass",
+      "published": "2026-11-08"
     }
   }
 }
