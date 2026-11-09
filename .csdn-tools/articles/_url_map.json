@@ -42,6 +42,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170287652",
       "title": "06 · 持久化数据：卷、PersistentVolume 与 StorageClass",
       "published": "2026-11-08"
+    },
+    "07-services-and-networking.md": {
+      "src": "articles-zh/07-services-and-networking.md",
+      "articleId": "170333601",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170333601",
+      "title": "07 · 网络：Service、DNS 与 NetworkPolicy",
+      "published": "2026-11-09"
+    },
+    "08-ingress-and-gateway-api.md": {
+      "src": "articles-zh/08-ingress-and-gateway-api.md",
+      "articleId": "170333965",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170333965",
+      "title": "08 · 把流量引进来：Ingress 与 Gateway API",
+      "published": "2026-11-09"
     }
   }
 }
