@@ -56,6 +56,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170333965",
       "title": "08 · 把流量引进来：Ingress 与 Gateway API",
       "published": "2026-11-09"
+    },
+    "09-helm-and-kustomize.md": {
+      "src": "articles-zh/09-helm-and-kustomize.md",
+      "articleId": "170419366",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170419366",
+      "title": "09 · 打包应用：Helm 与 Kustomize",
+      "published": "2026-11-10"
+    },
+    "10-deployment-strategies.md": {
+      "src": "articles-zh/10-deployment-strategies.md",
+      "articleId": "170419948",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170419948",
+      "title": "10 · 安全发布：滚动更新、蓝绿与金丝雀",
+      "published": "2026-11-10"
     }
   }
 }
