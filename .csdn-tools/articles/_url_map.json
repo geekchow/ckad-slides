@@ -70,6 +70,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170419948",
       "title": "10 · 安全发布：滚动更新、蓝绿与金丝雀",
       "published": "2026-11-10"
+    },
+    "11-security-and-resources.md": {
+      "src": "articles-zh/11-security-and-resources.md",
+      "articleId": "170521039",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170521039",
+      "title": "11 · 保护工作负载：RBAC、ServiceAccount、SecurityContext 与资源限制",
+      "published": "2026-11-11"
+    },
+    "12-observability.md": {
+      "src": "articles-zh/12-observability.md",
+      "articleId": "170521510",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170521510",
+      "title": "12 · 保持应用健康：探针、日志与指标",
+      "published": "2026-11-11"
     }
   }
 }
