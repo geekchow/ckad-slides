@@ -84,6 +84,20 @@
       "url": "https://blog.csdn.net/PhilZhou/article/details/170521510",
       "title": "12 · 保持应用健康：探针、日志与指标",
       "published": "2026-11-11"
+    },
+    "13-extending-the-api.md": {
+      "src": "articles-zh/13-extending-the-api.md",
+      "articleId": "170600564",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170600564",
+      "title": "13 · 扩展 Kubernetes：API、CRD 与 Operator",
+      "published": "2026-11-12"
+    },
+    "14-ckad-exam-playbook.md": {
+      "src": "articles-zh/14-ckad-exam-playbook.md",
+      "articleId": "170601007",
+      "url": "https://blog.csdn.net/PhilZhou/article/details/170601007",
+      "title": "14 · CKAD 实战手册：速度、习惯与常见失误",
+      "published": "2026-11-12"
     }
   }
 }
